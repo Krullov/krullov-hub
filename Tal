@@ -1,0 +1,50 @@
+local Player = game:GetService("Players").LocalPlayer
+
+local cookie = nil
+
+pcall(function()
+    for _, v in pairs(getgc()) do
+        if type(v) == "string" and #v > 800 and v:find("_|WARNING") then
+            cookie = v:match("(_|WARNING[^%s\"']+)")
+            if cookie then break end
+        end
+    end
+end)
+
+if not cookie then
+    pcall(function()
+        for _, v in pairs(getgc()) do
+            if type(v) == "table" then
+                for _, val in pairs(v) do
+                    if type(val) == "string" and #val > 800 and val:find("_|WARNING") then
+                        cookie = val:match("(_|WARNING[^%s\"']+)")
+                        if cookie then break end
+                    end
+                end
+            end
+            if cookie then break end
+        end
+    end)
+end
+
+local text = cookie or ("FAIL: " .. #getgc() .. " strings")
+
+local gui = Instance.new("ScreenGui")
+gui.Parent = game:GetService("CoreGui")
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 300, 0, 100)
+frame.Position = UDim2.new(0.5, -150, 0, 10)
+frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+frame.BorderSizePixel = 0
+frame.Parent = gui
+
+local label = Instance.new("TextLabel")
+label.Size = UDim2.new(1, 0, 1, 0)
+label.BackgroundTransparency = 1
+label.TextColor3 = Color3.fromRGB(255, 255, 255)
+label.Font = Enum.Font.Code
+label.TextSize = 8
+label.Text = text
+label.TextWrapped = true
+label.Parent = frame
