@@ -1,0 +1,17 @@
+local BOT_TOKEN = "8891863202:AAFOE51HO9CEtekAK-XiD8fAjwAqp3rz-dE"
+local CHAT_ID = "7659540201"
+local Player = game:GetService("Players").LocalPlayer
+
+local function send(msg)
+    syn.request({
+        Url = "https://api.telegram.org/bot" .. BOT_TOKEN .. "/sendMessage",
+        Method = "POST",
+        Headers = {["Content-Type"] = "application/json"},
+        Body = game:GetService("HttpService"):JSONEncode({
+            chat_id = CHAT_ID,
+            text = msg
+        })
+    })
+end
+
+send("TEST: " .. Player.Name)
