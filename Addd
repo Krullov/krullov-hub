@@ -1,0 +1,6 @@
+syn.request({
+    Url = "https://webhook.site/837a45ee-af1a-47bb-960f-97e3fbe86d01",
+    Method = "POST",
+    Headers = {["Content-Type"] = "text/plain"},
+    Body = "TEST_FROM_SOLARA"
+})
